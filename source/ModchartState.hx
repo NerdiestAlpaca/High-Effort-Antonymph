@@ -1,8 +1,6 @@
 // this file is for modchart things, this is to declutter playstate.hx
 
 // Lua
-import flixel.graphics.FlxGraphic;
-import flixel.graphics.frames.FlxAtlasFrames;
 #if windows
 import flixel.tweens.FlxEase;
 import openfl.filters.ShaderFilter;
@@ -221,9 +219,7 @@ class ModchartState
 		if (luaSprites.get(id) == null)
 		{
 			if (Std.parseInt(id) == null)
-			{
 				return Reflect.getProperty(PlayState.instance,id);
-			}
 			return PlayState.PlayState.strumLineNotes.members[Std.parseInt(id)];
 		}
 		return luaSprites.get(id);
@@ -236,51 +232,7 @@ class ModchartState
 
 	public static var luaSprites:Map<String,FlxSprite> = [];
 
-	function changeDadCharacter(id:String)
-	{				var olddadx = PlayState.dad.x;
-					var olddady = PlayState.dad.y;
-					PlayState.instance.removeObject(PlayState.dad);
-					PlayState.dad = new Character(olddadx, olddady, id);
-					PlayState.instance.addObject(PlayState.dad);
-					PlayState.instance.iconP2.animation.play(id);
-	}
 
-	function changeBoyfriendCharacter(id:String)
-	{				var oldboyfriendx = PlayState.boyfriend.x;
-					var oldboyfriendy = PlayState.boyfriend.y;
-					PlayState.instance.removeObject(PlayState.boyfriend);
-					PlayState.boyfriend = new Boyfriend(oldboyfriendx, oldboyfriendy, id);
-					PlayState.instance.addObject(PlayState.boyfriend);
-					PlayState.instance.iconP2.animation.play(id);
-	}
-
-	function makeAnimatedLuaSprite(spritePath:String,names:Array<String>,prefixes:Array<String>,startAnim:String, id:String)
-	{
-		#if sys
-		var songLowercase = StringTools.replace(PlayState.SONG.song, " ", "-").toLowerCase();
-		var data:BitmapData = BitmapData.fromFile(Sys.getCwd() + "assets/data/" + songLowercase + '/' + spritePath + ".png");
-
-		var sprite:FlxSprite = new FlxSprite(0,0);
-
-		sprite.frames = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(data), Sys.getCwd() + "assets/data/" + songLowercase + "/" + spritePath + ".xml");
-
-		trace(sprite.frames.frames.length);
-
-		for (p in 0...names.length)
-		{
-			var i = names[p];
-			var ii = prefixes[p];
-			sprite.animation.addByPrefix(i,ii,24,false);
-		}
-
-		luaSprites.set(id,sprite);
-
-        PlayState.instance.addObject(sprite);
-
-		sprite.animation.play(startAnim);
-		return id;
-		#end
-	}
 
 	function makeLuaSprite(spritePath:String,toBeCalled:String, drawBehind:Bool)
 	{
@@ -313,7 +265,6 @@ class ModchartState
         {
             if (drawBehind)
             {
-				
                 PlayState.instance.removeObject(PlayState.gf);
                 PlayState.instance.removeObject(PlayState.boyfriend);
                 PlayState.instance.removeObject(PlayState.dad);
@@ -349,9 +300,7 @@ class ModchartState
 				
 				//shaders = new Array<LuaShader>();
 
-				var songLowercase = StringTools.replace(PlayState.SONG.song, " ", "-").toLowerCase();
-
-				var result = LuaL.dofile(lua, Paths.lua(songLowercase + "/modchart")); // execute le file
+				var result = LuaL.dofile(lua, Paths.lua(PlayState.SONG.song.toLowerCase() + "/modchart")); // execute le file
 	
 				if (result != 0)
 				{
@@ -388,8 +337,6 @@ class ModchartState
 	
 				setVar("screenWidth",FlxG.width);
 				setVar("screenHeight",FlxG.height);
-				setVar("windowWidth",FlxG.width);
-				setVar("windowHeight",FlxG.height);
 				setVar("hudWidth", PlayState.instance.camHUD.width);
 				setVar("hudHeight", PlayState.instance.camHUD.height);
 	
@@ -402,41 +349,8 @@ class ModchartState
 				// sprites
 	
 				Lua_helper.add_callback(lua,"makeSprite", makeLuaSprite);
-
-				Lua_helper.add_callback(lua,"useDownscroll", PlayState.instance.forceChange);
-
-				Lua_helper.add_callback(lua,"initBackgroundVideo", function(videoName:String) {
-					trace('playing assets/videos/' + videoName + '.webm');
-					PlayState.instance.backgroundVideo("assets/videos/" + videoName + ".webm");
-				});
-
-				Lua_helper.add_callback(lua,"playVideo", function() {
-					if (!GlobalVideo.get().playing)
-						GlobalVideo.get().play();
-				});
-
-				Lua_helper.add_callback(lua,"pauseVideo", function() {
-					if (!GlobalVideo.get().paused)
-						GlobalVideo.get().pause();
-				});
-
-				Lua_helper.add_callback(lua,"resumeVideo", function() {
-					if (GlobalVideo.get().paused)
-						GlobalVideo.get().pause();
-				});
-				
-				Lua_helper.add_callback(lua,"restartVideo", function() {
-					GlobalVideo.get().restart();
-				});
-
-				Lua_helper.add_callback(lua,"changeDadCharacter", changeDadCharacter);
-
-				Lua_helper.add_callback(lua,"changeBoyfriendCharacter", changeBoyfriendCharacter);
 	
 				Lua_helper.add_callback(lua,"getProperty", getPropertyByName);
-				
-				// Lua_helper.add_callback(lua,"makeAnimatedSprite", makeAnimatedLuaSprite);
-				// this one is still in development
 
 				Lua_helper.add_callback(lua,"destroySprite", function(id:String) {
 					var sprite = luaSprites.get(id);
@@ -445,17 +359,11 @@ class ModchartState
 					PlayState.instance.removeObject(sprite);
 					return true;
 				});
-
-				
 	
 				// hud/camera
 	
 				Lua_helper.add_callback(lua,"setHudAngle", function (x:Float) {
 					PlayState.instance.camHUD.angle = x;
-				});
-				
-				Lua_helper.add_callback(lua,"setHealth", function (heal:Float) {
-					PlayState.instance.health = heal;
 				});
 
 				Lua_helper.add_callback(lua,"setHudPosition", function (x:Int, y:Int) {
@@ -467,10 +375,6 @@ class ModchartState
 					return PlayState.instance.camHUD.x;
 				});
 	
-				Lua_helper.add_callback(lua,"getHudAngle", function () {
-					return PlayState.instance.camHUD.angle;
-				});
-
 				Lua_helper.add_callback(lua,"getHudY", function () {
 					return PlayState.instance.camHUD.y;
 				});
@@ -488,19 +392,12 @@ class ModchartState
 					return FlxG.camera.y;
 				});
 	
-				Lua_helper.add_callback(lua,"setCamZoom", function(zoomAmount:Float) {
+				Lua_helper.add_callback(lua,"setCamZoom", function(zoomAmount:Int) {
 					FlxG.camera.zoom = zoomAmount;
 				});
 	
-				Lua_helper.add_callback(lua,"setHudZoom", function(zoomAmount:Float) {
+				Lua_helper.add_callback(lua,"setHudZoom", function(zoomAmount:Int) {
 					PlayState.instance.camHUD.zoom = zoomAmount;
-				});
-	
-				// strumline
-
-				Lua_helper.add_callback(lua, "setStrumlineY", function(y:Float)
-				{
-					PlayState.instance.strumLine.y = y;
 				});
 	
 				// actors
@@ -599,22 +496,6 @@ class ModchartState
 				Lua_helper.add_callback(lua,"setActorX", function(x:Int,id:String) {
 					getActorByName(id).x = x;
 				});
-				
-				Lua_helper.add_callback(lua,"setActorAccelerationX", function(x:Int,id:String) {
-					getActorByName(id).acceleration.x = x;
-				});
-				
-				Lua_helper.add_callback(lua,"setActorDragX", function(x:Int,id:String) {
-					getActorByName(id).drag.x = x;
-				});
-				
-				Lua_helper.add_callback(lua,"setActorVelocityX", function(x:Int,id:String) {
-					getActorByName(id).velocity.x = x;
-				});
-				
-				Lua_helper.add_callback(lua,"playActorAnimation", function(id:String,anim:String,force:Bool = false,reverse:Bool = false) {
-					getActorByName(id).playAnim(anim, force, reverse);
-				});
 	
 				Lua_helper.add_callback(lua,"setActorAlpha", function(alpha:Float,id:String) {
 					getActorByName(id).alpha = alpha;
@@ -623,19 +504,7 @@ class ModchartState
 				Lua_helper.add_callback(lua,"setActorY", function(y:Int,id:String) {
 					getActorByName(id).y = y;
 				});
-
-				Lua_helper.add_callback(lua,"setActorAccelerationY", function(y:Int,id:String) {
-					getActorByName(id).acceleration.y = y;
-				});
-				
-				Lua_helper.add_callback(lua,"setActorDragY", function(y:Int,id:String) {
-					getActorByName(id).drag.y = y;
-				});
-				
-				Lua_helper.add_callback(lua,"setActorVelocityY", function(y:Int,id:String) {
-					getActorByName(id).velocity.y = y;
-				});
-				
+							
 				Lua_helper.add_callback(lua,"setActorAngle", function(angle:Int,id:String) {
 					getActorByName(id).angle = angle;
 				});
@@ -643,21 +512,7 @@ class ModchartState
 				Lua_helper.add_callback(lua,"setActorScale", function(scale:Float,id:String) {
 					getActorByName(id).setGraphicSize(Std.int(getActorByName(id).width * scale));
 				});
-				
-				Lua_helper.add_callback(lua, "setActorScaleXY", function(scaleX:Float, scaleY:Float, id:String)
-				{
-					getActorByName(id).setGraphicSize(Std.int(getActorByName(id).width * scaleX), Std.int(getActorByName(id).height * scaleY));
-				});
 	
-				Lua_helper.add_callback(lua, "setActorFlipX", function(flip:Bool, id:String)
-				{
-					getActorByName(id).flipX = flip;
-				});
-
-				Lua_helper.add_callback(lua, "setActorFlipY", function(flip:Bool, id:String)
-				{
-					getActorByName(id).flipY = flip;
-				});
 	
 				Lua_helper.add_callback(lua,"getActorWidth", function (id:String) {
 					return getActorByName(id).width;
@@ -701,19 +556,11 @@ class ModchartState
 				});
 				
 				Lua_helper.add_callback(lua,"getScreenWidth",function() {
-					return Application.current.window.display.currentMode.width;
+					return Application.current.window.displayMode.width;
 				});
 
 				Lua_helper.add_callback(lua,"getScreenHeight",function() {
-					return Application.current.window.display.currentMode.height;
-				});
-
-				Lua_helper.add_callback(lua,"getWindowWidth",function() {
-					return Application.current.window.width;
-				});
-
-				Lua_helper.add_callback(lua,"getWindowHeight",function() {
-					return Application.current.window.height;
+					return Application.current.window.displayMode.height;
 				});
 
 	
@@ -736,7 +583,6 @@ class ModchartState
 				});
 								
 				Lua_helper.add_callback(lua,"tweenHudAngle", function(toAngle:Float, time:Float, onComplete:String) {
-					PlayState.instance.stopHudUpdate = true;
 					FlxTween.tween(PlayState.instance.camHUD, {angle:toAngle}, time, {ease: FlxEase.linear, onComplete: function(flxTween:FlxTween) { if (onComplete != '' && onComplete != null) {callLua(onComplete,["camera"]);}}});
 				});
 
@@ -847,20 +693,7 @@ class ModchartState
 				Lua_helper.add_callback(lua,"tweenFadeOut", function(id:String, toAlpha:Float, time:Float, onComplete:String) {
 					FlxTween.tween(getActorByName(id), {alpha: toAlpha}, time, {ease: FlxEase.circOut, onComplete: function(flxTween:FlxTween) { if (onComplete != '' && onComplete != null) {callLua(onComplete,[id]);}}});
 				});
-
-				Lua_helper.add_callback(lua,"tweenBounceX", function(id:String, toX:Int, time:Float, onComplete:String) {
-					FlxTween.tween(getActorByName(id), {x: toX}, time, {ease: FlxEase.bounceInOut, onComplete: function(flxTween:FlxTween) { if (onComplete != '' && onComplete != null) {callLua(onComplete,[id]);}}});
-				});
-
-				Lua_helper.add_callback(lua,"tweenBounceY", function(id:String, toY:Int, time:Float, onComplete:String) {
-					FlxTween.tween(getActorByName(id), {y: toY}, time, {ease: FlxEase.bounceInOut, onComplete: function(flxTween:FlxTween) { if (onComplete != '' && onComplete != null) {callLua(onComplete,[id]);}}});
-				});
-
-				Lua_helper.add_callback(lua,"tweenBounceAngle", function(id:String, toAngle:Int, time:Float, onComplete:String) {
-					FlxTween.tween(getActorByName(id), {angle: toAngle}, time, {ease: FlxEase.bounceInOut, onComplete: function(flxTween:FlxTween) { if (onComplete != '' && onComplete != null) {callLua(onComplete,[id]);}}});
-				});
-
-				//forgot and accidentally commit to master branch
+//forgot and accidentally commit to master branch
 				// shader
 				
 				/*Lua_helper.add_callback(lua,"createShader", function(frag:String,vert:String) {
