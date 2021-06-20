@@ -1,6 +1,5 @@
 package;
 
-import webm.WebmPlayer;
 import openfl.display.BlendMode;
 import openfl.text.TextFormat;
 import openfl.display.Application;
@@ -26,8 +25,6 @@ class Main extends Sprite
 
 	public static var watermarks = true; // Whether to put Kade Engine liteartly anywhere
 
-	public static var instance:Main;
-
 	// You can pretty much ignore everything from here on - your code should go in your states.
 
 	public static function main():Void
@@ -41,8 +38,6 @@ class Main extends Sprite
 	public function new()
 	{
 		super();
-
-		instance = this;
 
 		if (stage != null)
 		{
@@ -64,8 +59,6 @@ class Main extends Sprite
 		setupGame();
 	}
 
-	public static var webmHandler:WebmHandler;
-
 	private function setupGame():Void
 	{
 		var stageWidth:Int = Lib.current.stage.stageWidth;
@@ -83,8 +76,6 @@ class Main extends Sprite
 		#if !debug
 		initialState = TitleState;
 		#end
-
-		
 
 		game = new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen);
 
