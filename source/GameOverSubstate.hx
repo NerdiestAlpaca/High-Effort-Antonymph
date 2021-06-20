@@ -61,12 +61,6 @@ class GameOverSubstate extends MusicBeatSubstate
 		{
 			FlxG.sound.music.stop();
 
-			if (PlayState.useVideo)
-				{
-					GlobalVideo.get().stop();
-					PlayState.instance.remove(PlayState.instance.videoSprite);
-				}
-
 			if (PlayState.isStoryMode)
 				FlxG.switchState(new StoryMenuState());
 			else
@@ -111,12 +105,6 @@ class GameOverSubstate extends MusicBeatSubstate
 			{
 				FlxG.camera.fade(FlxColor.BLACK, 2, false, function()
 				{
-					if (PlayState.useVideo)
-						{
-							GlobalVideo.get().stop();
-							PlayState.instance.remove(PlayState.instance.videoSprite);
-							PlayState.removedVideo = true;
-						}
 					LoadingState.loadAndSwitchState(new PlayState());
 				});
 			});
