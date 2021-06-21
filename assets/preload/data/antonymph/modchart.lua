@@ -1,6 +1,7 @@
 local swaying = false
+local swaying2 = false
+local swaying3 = false
 local bounce = false
-
 function start (song)
 	print("Song: " .. song .. " @ " .. bpm .. " donwscroll: " .. downscroll)
     for i = 0, 7 do 
@@ -12,54 +13,56 @@ function start (song)
         end
     end
     error1 = makeSprite('error1','error1', true)
-    setActorX(100,'error1')
+    setActorX(500,'error1')
 	setActorY(0,'error1')
 	setActorAlpha(0,'error1')
 	setActorScale(1.5,'error1')
     error2 = makeSprite('error2','error2', true)
-    setActorX(800,'error2')
+    setActorX(500,'error2')
     setActorY(0,'error2')
     setActorAlpha(0,'error2')
     setActorScale(1.5,'error2')
     error3 = makeSprite('error3','error3', true)
-    setActorX(200,'error3')
+    setActorX(500,'error3')
     setActorY(0,'error3')
     setActorAlpha(0,'error3')
     setActorScale(1.5,'error3')
     error4 = makeSprite('error4','error4', true)
-    setActorX(480,'error4')
+    setActorX(500,'error4')
     setActorY(-50,'error4')
     setActorAlpha(0,'error4')
     setActorScale(1.5,'error4')
     error5 = makeSprite('error5','error5', true)
-    setActorX(200,'error5')
+    setActorX(500,'error5')
     setActorY(0,'error5')
     setActorAlpha(0,'error5')
     setActorScale(1.5,'error5')
     error6 = makeSprite('error6','error6', true)
-    setActorX(900,'error6')
+    setActorX(500,'error6')
     setActorY(0,'error6')
     setActorAlpha(0,'error6')
     setActorScale(1.5,'error6')
     error7 = makeSprite('error7','error7', true)
-    setActorX(300,'error7')
-    setActorY(100,'error7')
+    setActorX(400,'error7')
+    setActorY(0,'error7')
     setActorAlpha(0,'error7')
-    setActorScale(1.5,'error7')
+    setActorScale(1.4,'error7')
     login = makeSprite('login','login', true)
     setActorX(0,'login')
     setActorY(-200,'login')
     setActorAlpha(0,'login')
     setActorScale(2,'login')
-    setActorScale(0.3,'girlfriend')
+    stars = makeSprite('stars','stars', true)
+    setActorX(0,'stars')
+    setActorY(-200,'stars')
+    setActorAlpha(0,'stars')
+    setActorScale(2,'stars')
     setActorY(-300, 'girlfriend')
     setActorX(1000, 'girlfriend')
     setActorAlpha(0, 'girlfriend')
-    setActorScale(0.6,'boyfriend')
     setActorY(0, 'boyfriend')
     setActorX(700, 'boyfriend')
     setActorAlpha(0, 'boyfriend')
-    setActorScale(0.2,'dad')
     setActorY(0, 'dad')
     setActorX(20, 'dad')
     setActorAlpha(0, 'dad')
@@ -125,8 +128,14 @@ function update (elapsed)
             setActorY(defaultStrum0Y + 0, i)
 		end
     end
+    if swaying3 then
+        local currentBeat = (songPos / 800)*(bpm/40)
+		for i=0,7 do
+            setActorX(_G['defaultStrum'..i..'X'] + 24 * math.sin((currentBeat + i*0)), i)
+            setActorY(defaultStrum0Y + 0, i)
+		end
+    end
 end
-
 
 function beatHit (beat)
 
@@ -145,8 +154,11 @@ local lastStep = 0
 function stepHit (step)
 if step == 1 then
     tweenFadeIn('boyfriend',1,1)
-    tweenFadeIn('girlfriend',1,1)
-    tweenFadeIn('dad',1,1)
+    tweenFadeIn('girlfriend',1,1.25)
+    tweenFadeIn('dad',1,1.5)
+    setActorScale(0.6,'boyfriend')
+    setActorScale(0.2,'dad')
+    setActorScale(0.3,'girlfriend')
     setCamZoom(0.77)
     for i = 4, 7 do -- go to the center
         tweenPosXAngle(i, _G['defaultStrum'..i..'X'] - 275,getActorAngle(i) + 360, 3, 'setDefault')
@@ -210,17 +222,42 @@ if step == 910 then
     tweenFadeIn('login',1,0.2)
     tweenPosYAngle('boyfriend', getActorY('boyfriend') + 100 ,getActorAngle('boyfriend') + 0, 1)
     tweenPosYAngle('dad', getActorY('dad') + 100 ,getActorAngle('dad') + 0, 1)
-    setActorScale(0.36, 'dad')
+    tweenPosXAngle('dad', getActorX('dad') + 100 ,getActorAngle('dad') + 0, 1)
+    setActorScale(0.4, 'dad')
 end
 if step == 1034 then
     tweenFadeOut('login',0,0.2)
     tweenFadeIn('girlfriend',1,0.2)
     tweenPosYAngle('boyfriend', getActorY('boyfriend') - 100 ,getActorAngle('boyfriend') + 0, 1)
     tweenPosYAngle('dad', getActorY('dad') - 100 ,getActorAngle('dad') + 0, 1)
-    setActorScale(0.2,'dad')
+    tweenPosXAngle('dad', getActorX('dad') - 100 ,getActorAngle('dad') + 0, 1)
+    setActorScale(0.32,'dad')
 end
+if step == 1296 then
+    tweenFadeOut('girlfriend',0,0.2)
+    tweenFadeOut('dad',0,0.2)
+    tweenFadeIn('stars',1,0.2)
+    tweenPosYAngle('boyfriend', getActorY('boyfriend') - 0 ,getActorAngle('boyfriend') + 3600, 35)
 end
-
+if step == 1584 then
+    swaying2 = false
+    bounce = true
+    tweenFadeOut('stars',0,2)
+end
+if step == 1600 then
+    bounce = false
+    swaying3 = true
+    tweenFadeIn('girlfriend',1,0.2)
+    tweenFadeIn('dad',1,0.2)
+    end
+if step == 2112 then
+    showOnlyStrums = false
+    swaying3 = false
+    tweenFadeOut('girlfriend',0,2.5)
+    tweenFadeOut('boyfriend',0,3)
+    tweenFadeOut('dad',0,2)
+    end
+end
 function keyPressed (key)
 
 end
