@@ -1,15 +1,12 @@
-# careless
-blah blah blah, modchart thing.
+# High Effort ANTONYMPH
+Modcharts are pog
 
 # notice
-background effects are by Jenny (thanks below this) and I didn't make em, they're a video in the background.
-
-Original song by fizzd (thanks below this) for Rhythm Doctor, the cover is by me.
+Original song by Vylet Pony (thanks below this), the cover is by me.
 
 # thanks
-- [Fizzd/Hafiz](https://twitter.com/7thbeat) Stems and allowing me to do this lol
-- [Jenny](https://twitter.com/megaminerjenny) Help wit the background effects
-- [gwebdev](https://github.com/GrowtopiaFli) Video code
+- [Vylet Pony](https://twitter.com/VyletPony) Original song and allowing me to do this lol
+- [KadeDev](https://twitter.com/KadeDeveloper) Modchart Support and Guide
 
 # something you should do
-play [RHYTHM DOCTOR](https://store.steampowered.com/app/774181/Rhythm_Doctor/)
+[Stream ANTONYMPH](https://open.spotify.com/album/3TNzAAFDjBFLRWHL8qjfOp)
